@@ -3,27 +3,22 @@ import json
 import os
 
 app = Flask(__name__)
-
-# Nombre del archivo que servirá como nuestra Base de Datos en el disco duro
 ARCHIVO_DB = 'usuarios.json'
 
-# Función auxiliar para LEER los usuarios del archivo
 def leer_usuarios_del_disco():
-    # Si el archivo no existe todavía, devolvemos una lista vacía
     if not os.path.exists(ARCHIVO_DB):
         return []
-    
-    # Si existe, lo abrimos y leemos su contenido
     with open(ARCHIVO_DB, 'r') as archivo:
         return json.load(archivo)
 
-# Función auxiliar para GUARDAR los usuarios en el archivo
 def guardar_usuarios_en_disco(lista_usuarios):
     with open(ARCHIVO_DB, 'w') as archivo:
         json.dump(lista_usuarios, archivo, indent=4)
 
+@app.route('/')
+def index():
+    return render_template('index.html')
 
-# RUTA 1: Ver los usuarios (Ahora lee directamente del disco duro)
 @app.route('/usuarios', methods=['GET'])
 def ver_usuarios():
     usuarios = leer_usuarios_del_disco()
@@ -32,31 +27,38 @@ def ver_usuarios():
         "total": len(usuarios)
     })
 
-# RUTA PRINCIPAL: Muestra la interfaz gráfica de la startup
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-
-# RUTA 2: Registrar usuario (Ahora escribe en el disco duro)
 @app.route('/registrar', methods=['POST'])
 def registrar_usuario():
     datos_recibidos = request.get_json()
-    
-    # 1. Traemos los usuarios que ya existían en el archivo
     usuarios_actuales = leer_usuarios_del_disco()
     
-    # 2. Le sumamos el nuevo usuario a la lista
-    usuarios_actuales.append(datos_recibidos)
-    
-    # 3. Guardamos la lista actualizada de vuelta en el disco duro
-    guardar_usuarios_en_disco(usuarios_actuales)
-    
-    return jsonify({
-        "mensaje": "Usuario guardado con exito en el disco duro de la startup",
-        "usuario_creado": datos_recibidos
-    })
+    # LÓGICA INTELIGENTE: Clasificación automática de clientes
+    # Limpiamos el texto de fortuna (ej: "100M" -> 100) para analizarlo
+    fortuna_texto = datos_recibidos.get('fortuna_estimada', '0').upper().replace('M', '')
+    try:
+        fortuna_num = float(fortuna_texto)
+        if fortuna_num >= 100:
+            datos_recibidos['categoria'] = 'VIP ✨'
+        else:
+            datos_recibidos['categoria'] = 'Estándar'
+    except:
+        datos_recibidos['categoria'] = 'Estándar'
 
+    usuarios_actuales.append(datos_recibidos)
+    guardar_usuarios_en_disco(usuarios_actuales)
+    return jsonify({"mensaje": "Usuario procesado con éxito", "usuario_creado": datos_recibidos})
+
+# NUEVA RUTA: Para eliminar un usuario por su nombre
+@app.route('/eliminar', methods=['POST'])
+def eliminar_usuario():
+    nombre_a_borrar = request.get_json().get('nombre')
+    usuarios_actuales = leer_usuarios_del_disco()
+    
+    # Filtramos la lista para dejar por fuera al que queremos borrar
+    usuarios_filtrados = [u for u in usuarios_actuales if u.get('nombre') != nombre_a_borrar]
+    
+    guardar_usuarios_en_disco(usuarios_filtrados)
+    return jsonify({"mensaje": "Usuario eliminado correctamente"})
 
 if __name__ == '__main__':
     app.run(debug=True)

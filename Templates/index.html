@@ -3,131 +3,394 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Control - Startup</title>
+    <title>Vantage VC - Portfolio Dashboard</title>
     <style>
+        :root {
+            --bg-main: #0b0f19;
+            --bg-card: #131c2e;
+            --bg-input: #070a12;
+            --gold: #d4af37;
+            --gold-gradient: linear-gradient(135deg, #f3e5ab 0%, #d4af37 50%, #aa7c11 100%);
+            --text-main: #f8fafc;
+            --text-muted: #64748b;
+            --border: #1e293b;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #0f172a;
-            color: #f8fafc;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            margin: 0;
+            padding: 30px;
             display: flex;
             justify-content: center;
-            padding: 40px;
         }
-        .container {
+
+        .dashboard-wrapper {
             width: 100%;
-            max-width: 600px;
-            background: #1e293b;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            max-width: 1200px;
         }
-        h1 { color: #38bdf8; text-align: center; }
-        .form-group {
-            margin-bottom: 15px;
+
+        /* Encabezado con Logo */
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
         }
-        label { display: block; margin-bottom: 5px; color: #94a3b8; }
+        .logo-box {
+            font-size: 28px;
+            font-weight: 900;
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+        }
+
+        /* Barra de Métricas Dorada */
+        .metrics-bar {
+            display: flex;
+            background: linear-gradient(180deg, #1e293b 0%, #131c2e 100%);
+            border: 1px solid var(--gold);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.1);
+        }
+        .metric-card {
+            width: 50%;
+            text-align: center;
+        }
+        .metric-card:first-child {
+            border-right: 1px solid var(--border);
+        }
+        .metric-val {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--text-main);
+        }
+        .metric-val.gold-text {
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .metric-lbl {
+            font-size: 11px;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            margin-top: 5px;
+        }
+        .status-badge {
+            background: #10b981;
+            color: #0b0f19;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-left: 5px;
+            vertical-align: middle;
+        }
+
+        /* LAYOUT DE DOS COLUMNAS */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+
+        /* Columna Izquierda: Operaciones */
+        .panel-left {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .form-section {
+            background: var(--bg-card);
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group-inline {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        label { display: block; color: var(--text-main); font-size: 14px; }
+        .add-link { color: var(--gold); font-size: 12px; text-decoration: none; }
         input {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #334155;
-            background: #0f172a;
+            padding: 12px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
             color: white;
             border-radius: 6px;
             box-sizing: border-box;
+            font-size: 14px;
         }
-        button {
+        input:focus { border-color: var(--gold); outline: none; }
+
+        button.btn-submit {
             width: 100%;
-            padding: 12px;
-            background: #0284c7;
+            padding: 14px;
+            background: linear-gradient(90deg, #0284c7 0%, #0369a1 100%);
             color: white;
             border: none;
             border-radius: 6px;
-            font-size: 16px;
+            font-size: 15px;
             cursor: pointer;
             font-weight: bold;
-        }
-        button:hover { background: #0369a1; }
-        .user-card {
-            background: #334155;
-            padding: 15px;
-            border-radius: 8px;
+            letter-spacing: 0.5px;
             margin-top: 10px;
-            border-left: 5px solid #38bdf8;
         }
+        button.btn-submit:hover { opacity: 0.9; }
+
+        /* Lista de Posiciones Activas */
+        .section-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--text-main);
+        }
+
+        .user-card {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .user-card.vip-card {
+            border-left: 4px solid var(--gold);
+            box-shadow: inset 5px 0 20px rgba(212, 175, 55, 0.05);
+        }
+        .user-card.standard-card {
+            border-left: 4px solid #38bdf8;
+        }
+
+        .card-info h3 { margin: 0 0 5px 0; font-size: 18px; }
+        .card-info .meta-rol { color: var(--text-muted); font-size: 13px; margin-bottom: 15px; }
+        .card-details-grid {
+            display: grid;
+            grid-template-columns: 140px 140px;
+            gap: 10px;
+            margin-top: 12px;
+            font-size: 12px;
+        }
+        .detail-lbl { color: var(--text-muted); }
+        .detail-val { color: var(--text-main); font-weight: 500; }
+        .detail-val.active-green { color: #10b981; }
+
+        .card-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            justify-content: space-between;
+            height: 80px;
+        }
+        .card-price { font-size: 22px; font-weight: bold; }
+        .card-actions { display: flex; gap: 8px; }
+        .btn-edit-opt { background: none; border: 1px solid var(--border); color: var(--text-muted); padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; }
+        .btn-delete-opt { background: #ef4444; border: none; color: white; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; }
+
+        .tag-vip { background: var(--gold-gradient); color: #000; font-size: 9px; font-weight: bold; padding: 1px 4px; border-radius: 3px; margin-left: 5px; }
+        .tag-partner { border: 1px solid var(--gold); color: var(--gold); font-size: 9px; font-weight: bold; padding: 1px 4px; border-radius: 3px; margin-left: 3px; }
+
+        /* Columna Derecha: Insights Lateral */
+        .panel-right {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .sidebar-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .sidebar-box h4 { margin: 0 0 15px 0; font-size: 14px; color: var(--text-main); letter-spacing: 0.5px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .insight-text { font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px; }
+        .insight-highlight { color: var(--text-main); font-weight: 500; }
+        
+        .sidebar-link { display: block; color: var(--text-muted); font-size: 13px; text-decoration: none; padding: 8px 0; border-bottom: 1px dashed #1e293b; }
+        .sidebar-link:hover { color: var(--gold); }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>🚀 Sistema de Usuarios - Startup</h1>
+<div class="dashboard-wrapper">
     
-    <form id="formularioUsuario">
-        <div class="form-group">
-            <label>Nombre Completo:</label>
-            <input type="text" id="nombre" required placeholder="Ej. Emmanuel">
-        </div>
-        <div class="form-group">
-            <label>Rol en la Empresa:</label>
-            <input type="text" id="rol" required placeholder="Ej. CEO">
-        </div>
-        <div class="form-group">
-            <label>Fortuna Estimada ($):</label>
-            <input type="text" id="fortuna" required placeholder="Ej. 100M">
-        </div>
-        <button type="submit">Registrar en la Nube</button>
-    </form>
+    <div class="header-brand">
+        <div class="logo-box">VA</div>
+        <div style="font-size: 14px; color: var(--text-muted); font-weight: 500; margin-top: 5px;">Vantage VC - Portfolio Dashboard</div>
+    </div>
 
-    <hr style="border-color: #334155; margin: 30px 0;">
+    <div class="metrics-bar">
+        <div class="metric-card">
+            <div class="metric-val"><span id="metricTotal">0</span> <span class="status-badge">Active</span></div>
+            <div class="metric-lbl">ACTIVE PORTFOLIOS</div>
+        </div>
+        <div class="metric-card">
+            <div id="metricCapital" class="metric-val gold-text">$0M</div>
+            <div class="metric-lbl">CAPITAL DEPLOYED</div>
+        </div>
+    </div>
 
-    <h2>Usuarios Activos</h2>
-    <div id="listaUsuarios"></div>
+    <div class="main-layout">
+        
+        <div class="panel-left">
+            <div class="form-section">
+                <form id="formularioUsuario">
+                    <div class="form-group">
+                        <div class="form-group-inline">
+                            <label>Nombre Completo:</label>
+                            <a href="#" class="add-link">+ Add New Entry</a>
+                        </div>
+                        <input type="text" id="nombre" required placeholder="Ej. Juan Solis">
+                    </div>
+                    <div class="form-group">
+                        <label>Rol Estratégico:</label>
+                        <input type="text" id="rol" required placeholder="Ej. Inversionista">
+                    </div>
+                    <div class="form-group">
+                        <label>Capital / Fortuna (Escribir solo número en Millones):</label>
+                        <input type="number" id="fortuna" required placeholder="Ej. 120">
+                    </div>
+                    <button type="submit" class="btn-submit">Vincular al Ecosistema</button>
+                </form>
+            </div>
+
+            <div>
+                <div class="section-title">Active Positions & VC Investments</div>
+                <div id="listaUsuarios"></div>
+            </div>
+        </div>
+
+        <div class="panel-right">
+            <div class="sidebar-box">
+                <h4>Actionable Insights</h4>
+                <div class="insight-text">
+                    <span class="insight-highlight">System-Generated:</span><br>
+                    C. flagged as high-retention candidate.
+                </div>
+                <div class="insight-text">
+                    <span class="insight-highlight">Automated:</span> Benito Martínez triggered premium access.
+                </div>
+            </div>
+
+            <div class="sidebar-box">
+                <h4>System Logs</h4>
+                <a href="#" class="sidebar-link">Data Export</a>
+                <a href="#" class="sidebar-link">Data Export</a>
+                <a href="#" class="sidebar-link">Data Export</a>
+            </div>
+
+            <div class="sidebar-box">
+                <h4>Audit Logs</h4>
+                <div class="insight-text" style="font-size: 11px;">
+                    Audit Logs expensive operations tracing active...
+                </div>
+            </div>
+        </div>
+
+    </div>
 </div>
 
 <script>
     const formulario = document.getElementById('formularioUsuario');
     const lista = document.getElementById('listaUsuarios');
 
-    // Función para traer los usuarios del backend y pintarlos
     async function cargarUsuarios() {
         const respuesta = await fetch('/usuarios');
         const datos = await respuesta.json();
-        lista.innerHTML = ''; // Limpiar lo anterior
+        lista.innerHTML = ''; 
+        
+        let sumaCapital = 0;
         
         datos.usuarios_registrados.forEach(usr => {
+            const capNum = parseFloat(usr.fortuna_estimada) || 0;
+            sumaCapital += capNum;
+            
+            const esVip = usr.categoria === 'VIP ✨';
+            const claseCard = esVip ? 'user-card vip-card' : 'user-card standard-card';
+            
+            // Datos simulados inteligentes para rellenar la plantilla de nivel VC
+            const stage = esVip ? 'N/A' : 'Series A';
+            const ownership = esVip ? 'N/A' : '12.5%';
+            const portfolioName = esVip ? 'Music Fund II' : 'Growth Fund I';
+            const statusText = esVip ? 'Active-Premium' : 'Active';
+
             const div = document.createElement('div');
-            div.className = 'user-card';
+            div.className = claseCard;
             div.innerHTML = `
-                <strong>${usr.nombre}</strong> - <span style="color: #38bdf8">${usr.rol}</span><br>
-                <small style="color: #cbd5e1">Fortuna: ${usr.fortuna_estimada || usr.aporte || 'N/A'}</small>
+                <div class="card-info">
+                    <h3>${usr.nombre} 
+                        ${esVip ? '<span class="tag-vip">VIP</span><span class="tag-partner">PREMIUM PARTNER</span>' : ''}
+                    </h3>
+                    <div class="meta-rol">${usr.rol}</div>
+                    
+                    <div class="card-details-grid">
+                        <div>
+                            <div class="detail-lbl">${esVip ? 'Primary Portfolio:' : 'Funding Stage:'}</div>
+                            <div class="detail-val">${esVip ? portfolioName : stage}</div>
+                        </div>
+                        <div>
+                            <div class="detail-lbl">${esVip ? 'Status:' : 'Ownership:'}</div>
+                            <div class="detail-val ${esVip ? 'active-green' : ''}">${esVip ? statusText : ownership}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-right">
+                    <div class="card-price">$${usr.fortuna_estimada}${esVip ? 'M' : 'MM'}</div>
+                    <div class="card-actions">
+                        <button class="btn-edit-opt">Edit Details</button>
+                        <button class="btn-delete-opt" onclick="eliminarUsuario('${usr.nombre}')">Remove</button>
+                    </div>
+                </div>
             `;
             lista.appendChild(div);
         });
+
+        document.getElementById('metricTotal').innerText = datos.total;
+        document.getElementById('metricCapital').innerText = `$${sumaCapital}M`;
     }
 
-    // Escuchar cuando se envíe el formulario
     formulario.addEventListener('submit', async (e) => {
-        e.preventDefault(); // Evitar que la página se recargue por defecto
-        
+        e.preventDefault();
         const nuevoUsuario = {
             nombre: document.getElementById('nombre').value,
             rol: document.getElementById('rol').value,
             fortuna_estimada: document.getElementById('fortuna').value
         };
 
-        // Enviar los datos al backend usando POST de forma invisible
         await fetch('/registrar', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Type-Content': 'application/json', 'Content-Type': 'application/json' },
             body: JSON.stringify(nuevoUsuario)
         });
 
-        formulario.reset(); // Limpiar el formulario
-        cargarUsuarios();   // Actualizar la lista en vivo
+        formulario.reset();
+        cargarUsuarios();
     });
 
-    // Cargar los usuarios apenas se abra la página
+    async function eliminarUsuario(nombre) {
+        if(confirm(`¿Seguro que deseas eliminar a ${nombre} del sistema?`)) {
+            await fetch('/eliminar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nombre: nombre })
+            });
+            cargarUsuarios();
+        }
+    }
+
     cargarUsuarios();
 </script>
-
 </body>
 </html>

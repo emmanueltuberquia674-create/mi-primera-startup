@@ -1,12 +1,14 @@
 [
     {
-        "nombre": "Inversionista Angel",
-        "rol": "Socio",
-        "aporte": "50M"
+        "nombre": "Benito Antonio Mart\u00ednez Ocasio",
+        "rol": "Inversionista",
+        "fortuna_estimada": "100",
+        "categoria": "VIP \u2728"
     },
     {
         "nombre": "Sabrina Annlynn Carpenter",
-        "rol": "CEO",
-        "fortuna_estimada": "22M"
+        "rol": "Inversionista",
+        "fortuna_estimada": "22",
+        "categoria": "Est\u00e1ndar"
     }
 ]
