@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Control - Startup</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            display: flex;
+            justify-content: center;
+            padding: 40px;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: #1e293b;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        h1 { color: #38bdf8; text-align: center; }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label { display: block; margin-bottom: 5px; color: #94a3b8; }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: white;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #0284c7;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover { background: #0369a1; }
+        .user-card {
+            background: #334155;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            border-left: 5px solid #38bdf8;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🚀 Sistema de Usuarios - Startup</h1>
+    
+    <form id="formularioUsuario">
+        <div class="form-group">
+            <label>Nombre Completo:</label>
+            <input type="text" id="nombre" required placeholder="Ej. Emmanuel">
+        </div>
+        <div class="form-group">
+            <label>Rol en la Empresa:</label>
+            <input type="text" id="rol" required placeholder="Ej. CEO">
+        </div>
+        <div class="form-group">
+            <label>Fortuna Estimada ($):</label>
+            <input type="text" id="fortuna" required placeholder="Ej. 100M">
+        </div>
+        <button type="submit">Registrar en la Nube</button>
+    </form>
+
+    <hr style="border-color: #334155; margin: 30px 0;">
+
+    <h2>Usuarios Activos</h2>
+    <div id="listaUsuarios"></div>
+</div>
+
+<script>
+    const formulario = document.getElementById('formularioUsuario');
+    const lista = document.getElementById('listaUsuarios');
+
+    // Función para traer los usuarios del backend y pintarlos
+    async function cargarUsuarios() {
+        const respuesta = await fetch('/usuarios');
+        const datos = await respuesta.json();
+        lista.innerHTML = ''; // Limpiar lo anterior
+        
+        datos.usuarios_registrados.forEach(usr => {
+            const div = document.createElement('div');
+            div.className = 'user-card';
+            div.innerHTML = `
+                <strong>${usr.nombre}</strong> - <span style="color: #38bdf8">${usr.rol}</span><br>
+                <small style="color: #cbd5e1">Fortuna: ${usr.fortuna_estimada || usr.aporte || 'N/A'}</small>
+            `;
+            lista.appendChild(div);
+        });
+    }
+
+    // Escuchar cuando se envíe el formulario
+    formulario.addEventListener('submit', async (e) => {
+        e.preventDefault(); // Evitar que la página se recargue por defecto
+        
+        const nuevoUsuario = {
+            nombre: document.getElementById('nombre').value,
+            rol: document.getElementById('rol').value,
+            fortuna_estimada: document.getElementById('fortuna').value
+        };
+
+        // Enviar los datos al backend usando POST de forma invisible
+        await fetch('/registrar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(nuevoUsuario)
+        });
+
+        formulario.reset(); // Limpiar el formulario
+        cargarUsuarios();   // Actualizar la lista en vivo
+    });
+
+    // Cargar los usuarios apenas se abra la página
+    cargarUsuarios();
+</script>
+
+</body>
+</html>

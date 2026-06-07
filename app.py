@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 import json
 import os
 
@@ -31,6 +31,11 @@ def ver_usuarios():
         "usuarios_registrados": usuarios,
         "total": len(usuarios)
     })
+
+# RUTA PRINCIPAL: Muestra la interfaz gráfica de la startup
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 
 # RUTA 2: Registrar usuario (Ahora escribe en el disco duro)
