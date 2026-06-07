@@ -61,4 +61,8 @@ def eliminar_usuario():
     return jsonify({"mensaje": "Usuario eliminado correctamente"})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    import os
+    # Render asigna un puerto en la variable de entorno PORT. Si no existe, usa el 5000 local.
+    puerto = int(os.environ.get('PORT', 5000))
+    # Escucha en 0.0.0.0 para que sea accesible desde el exterior en la nube
+    app.run(host='0.0.0.0', port=puerto)
