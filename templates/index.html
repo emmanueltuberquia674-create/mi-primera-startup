@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vantage VC - Portfolio Dashboard</title>
+    <title>{{ config.nombre_sistema }} | Dashboard</title>
     <style>
         :root {
             --bg-main: #0b0f19;
@@ -227,8 +227,8 @@
 <div class="dashboard-wrapper">
     
     <div class="header-brand">
-        <div class="logo-box">VA</div>
-        <div style="font-size: 14px; color: var(--text-muted); font-weight: 500; margin-top: 5px;">Vantage VC - Portfolio Dashboard</div>
+        <div class="logo-box">{{ config.nombre_sistema[:2].upper() }}</div>
+        <div style="font-size: 14px; color: var(--text-muted); font-weight: 500; margin-top: 5px;">{{ config.nombre_sistema }} - {{ config.mensaje_bienvenida }}</div>
     </div>
 
     <div class="metrics-bar">
@@ -237,7 +237,7 @@
             <div class="metric-lbl">ACTIVE PORTFOLIOS</div>
         </div>
         <div class="metric-card">
-            <div id="metricCapital" class="metric-val gold-text">$0M</div>
+            <div id="metricCapital" class="metric-val gold-text">{{ config.simbolo_moneda }}0{{ config.moneda }}</div>
             <div class="metric-lbl">CAPITAL DEPLOYED</div>
         </div>
     </div>
@@ -255,142 +255,9 @@
                         <input type="text" id="nombre" required placeholder="Ej. Juan Solis">
                     </div>
                     <div class="form-group">
-                        <label>Rol Estratégico:</label>
+                        <div class="form-group-inline">
+                            <label>Rol Estratégico:</label>
+                        </div>
                         <input type="text" id="rol" required placeholder="Ej. Inversionista">
                     </div>
-                    <div class="form-group">
-                        <label>Capital / Fortuna (Escribir solo número en Millones):</label>
-                        <input type="number" id="fortuna" required placeholder="Ej. 120">
-                    </div>
-                    <button type="submit" class="btn-submit">Vincular al Ecosistema</button>
-                </form>
-            </div>
-
-            <div>
-                <div class="section-title">Active Positions & VC Investments</div>
-                <div id="listaUsuarios"></div>
-            </div>
-        </div>
-
-        <div class="panel-right">
-            <div class="sidebar-box">
-                <h4>Actionable Insights</h4>
-                <div class="insight-text">
-                    <span class="insight-highlight">System-Generated:</span><br>
-                    C. flagged as high-retention candidate.
-                </div>
-                <div class="insight-text">
-                    <span class="insight-highlight">Automated:</span> Benito Martínez triggered premium access.
-                </div>
-            </div>
-
-            <div class="sidebar-box">
-                <h4>System Logs</h4>
-                <a href="#" class="sidebar-link">Data Export</a>
-                <a href="#" class="sidebar-link">Data Export</a>
-                <a href="#" class="sidebar-link">Data Export</a>
-            </div>
-
-            <div class="sidebar-box">
-                <h4>Audit Logs</h4>
-                <div class="insight-text" style="font-size: 11px;">
-                    Audit Logs expensive operations tracing active...
-                </div>
-            </div>
-        </div>
-
-    </div>
-</div>
-
-<script>
-    const formulario = document.getElementById('formularioUsuario');
-    const lista = document.getElementById('listaUsuarios');
-
-    async function cargarUsuarios() {
-        const respuesta = await fetch('/usuarios');
-        const datos = await respuesta.json();
-        lista.innerHTML = ''; 
-        
-        let sumaCapital = 0;
-        
-        datos.usuarios_registrados.forEach(usr => {
-            const capNum = parseFloat(usr.fortuna_estimada) || 0;
-            sumaCapital += capNum;
-            
-            const esVip = usr.categoria === 'VIP ✨';
-            const claseCard = esVip ? 'user-card vip-card' : 'user-card standard-card';
-            
-            // Datos simulados inteligentes para rellenar la plantilla de nivel VC
-            const stage = esVip ? 'N/A' : 'Series A';
-            const ownership = esVip ? 'N/A' : '12.5%';
-            const portfolioName = esVip ? 'Music Fund II' : 'Growth Fund I';
-            const statusText = esVip ? 'Active-Premium' : 'Active';
-
-            const div = document.createElement('div');
-            div.className = claseCard;
-            div.innerHTML = `
-                <div class="card-info">
-                    <h3>${usr.nombre} 
-                        ${esVip ? '<span class="tag-vip">VIP</span><span class="tag-partner">PREMIUM PARTNER</span>' : ''}
-                    </h3>
-                    <div class="meta-rol">${usr.rol}</div>
-                    
-                    <div class="card-details-grid">
-                        <div>
-                            <div class="detail-lbl">${esVip ? 'Primary Portfolio:' : 'Funding Stage:'}</div>
-                            <div class="detail-val">${esVip ? portfolioName : stage}</div>
-                        </div>
-                        <div>
-                            <div class="detail-lbl">${esVip ? 'Status:' : 'Ownership:'}</div>
-                            <div class="detail-val ${esVip ? 'active-green' : ''}">${esVip ? statusText : ownership}</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-right">
-                    <div class="card-price">$${usr.fortuna_estimada}${esVip ? 'M' : 'MM'}</div>
-                    <div class="card-actions">
-                        <button class="btn-edit-opt">Edit Details</button>
-                        <button class="btn-delete-opt" onclick="eliminarUsuario('${usr.nombre}')">Remove</button>
-                    </div>
-                </div>
-            `;
-            lista.appendChild(div);
-        });
-
-        document.getElementById('metricTotal').innerText = datos.total;
-        document.getElementById('metricCapital').innerText = `$${sumaCapital}M`;
-    }
-
-    formulario.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const nuevoUsuario = {
-            nombre: document.getElementById('nombre').value,
-            rol: document.getElementById('rol').value,
-            fortuna_estimada: document.getElementById('fortuna').value
-        };
-
-        await fetch('/registrar', {
-            method: 'POST',
-            headers: { 'Type-Content': 'application/json', 'Content-Type': 'application/json' },
-            body: JSON.stringify(nuevoUsuario)
-        });
-
-        formulario.reset();
-        cargarUsuarios();
-    });
-
-    async function eliminarUsuario(nombre) {
-        if(confirm(`¿Seguro que deseas eliminar a ${nombre} del sistema?`)) {
-            await fetch('/eliminar', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nombre: nombre })
-            });
-            cargarUsuarios();
-        }
-    }
-
-    cargarUsuarios();
-</script>
-</body>
-</html>
+                    <div class="

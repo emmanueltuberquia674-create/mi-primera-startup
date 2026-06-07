@@ -1,0 +1,7 @@
+{
+    "nombre_sistema": "Vantage VC",
+    "moneda": "M",
+    "simbolo_moneda": "$",
+    "limite_vip": 100.0,
+    "mensaje_bienvenida": "Portfolio Dashboard"
+}
